@@ -17,4 +17,4 @@ function MovieDetail({ movie }) {
   );
 }
 
-export default MovieDetail;/n
+export default MovieDetail;
