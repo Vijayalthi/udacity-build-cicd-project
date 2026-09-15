@@ -1,0 +1,98 @@
+name: Frontend Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - starter/frontend/**
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: starter/frontend
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: starter/frontend/package-lock.json
+      - name: Configure npm timeouts
+        run: |
+          npm config set fetch-timeout 60000
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-retries 5
+      - name: Install dependencies
+        timeout-minutes: 8
+        run: |
+          for i in 1 2 3; do
+            npm ci && break
+            echo "npm ci failed, retrying in 15s... (attempt $i)"
+            sleep 15
+          done
+      - run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: starter/frontend/package-lock.json
+      - name: Configure npm timeouts
+        run: |
+          npm config set fetch-timeout 60000
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-retries 5
+      - name: Install dependencies
+        timeout-minutes: 8
+        run: |
+          for i in 1 2 3; do
+            npm ci && break
+            echo "npm ci failed, retrying in 15s... (attempt $i)"
+            sleep 15
+          done
+      - run: CI=true npm test
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: starter/frontend/package-lock.json
+      - name: Configure npm timeouts
+        run: |
+          npm config set fetch-timeout 60000
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-retries 5
+      - name: Install dependencies
+        timeout-minutes: 8
+        run: |
+          for i in 1 2 3; do
+            npm ci && break
+            echo "npm ci failed, retrying in 15s... (attempt $i)"
+            sleep 15
+          done
+      - run: CI=true npm test
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 \
+            --tag=mp-frontend:latest .
