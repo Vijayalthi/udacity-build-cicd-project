@@ -66,8 +66,13 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           REACT_APP_MOVIE_API_URL: ${{ secrets.REACT_APP_MOVIE_API_URL }}
         run: |
+          if [ -z "$REACT_APP_MOVIE_API_URL" ]; then
+            echo "API URL IS EMPTY"
+          else
+            echo "API URL IS SET"
+          fi
           docker build \
-            --build-arg=REACT_APP_MOVIE_API_URL=$REACT_APP_MOVIE_API_URL \
+            --build-arg=REACT_APP_MOVIE_API_URL="$REACT_APP_MOVIE_API_URL" \
             --tag=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
