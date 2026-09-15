@@ -71,7 +71,7 @@ jobs:
           else
             echo "API URL IS SET"
           fi
-          docker build \
+          docker build --no-cache\
             --build-arg=REACT_APP_MOVIE_API_URL="$REACT_APP_MOVIE_API_URL" \
             --tag=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
