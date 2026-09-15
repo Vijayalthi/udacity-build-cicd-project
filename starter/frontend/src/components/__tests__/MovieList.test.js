@@ -34,4 +34,4 @@ test('calls onMovieClick when movie is clicked', async () => {
   fireEvent.click(movie1);
 
   expect(onMovieClick).toHaveBeenCalledWith(mockMovies[0]);
-});
+});/n
