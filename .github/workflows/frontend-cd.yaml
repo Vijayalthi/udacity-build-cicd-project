@@ -71,10 +71,14 @@ jobs:
           else
             echo "API URL IS SET"
           fi
-          docker build --no-cache\
+
+          docker build --no-cache \
             --build-arg=REACT_APP_MOVIE_API_URL="$REACT_APP_MOVIE_API_URL" \
             --tag=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+          docker run --rm $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG sh -c 'grep -Rl "a8a928bfe13084cd90f1af6cdce6af0-29281106.us-east-1.elb.amazonaws.com" /app/build/static/js/ >/dev/null && echo "BACKEND URL EMBEDDED" || echo "BACKEND URL NOT EMBEDDED"'
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
